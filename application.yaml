@@ -1,0 +1,13 @@
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  username: root
+  password: 123456
+  database: test
+  chartset: utf8
+  timeout: 60s
+
+redis:
+  adress: 127.0.0.1:6379
+  password:
+  database: 0
