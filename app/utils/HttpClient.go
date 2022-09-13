@@ -11,24 +11,28 @@ const httpClientTimeOut = 3
 const httpClientRetryCount = 3
 
 // HttpGetResJson get request and json response
-func HttpGetResJson(url string, queryParams map[string]string, result interface{}) (res *resty.Response, err error) {
+func HttpGetResJson(url string, queryParams map[string]string, headers map[string]string, result interface{}) (res *resty.Response, err error) {
 	client := resty.New()
 
 	client.SetTimeout(time.Second * httpClientTimeOut)
 	client.SetRetryCount(httpClientRetryCount)
 	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
 
-	res, err = client.R().
+	req := client.R().
 		SetQueryParams(queryParams).
 		SetHeader("Accept", "application/json").
-		SetResult(result).
-		Get(url)
+		SetResult(result)
+	//设置header头
+	for key, value := range headers {
+		req = req.SetHeader(key, value)
+	}
+	res, err = req.Get(url)
 
 	return res, err
 }
 
 // HttpSendFormResJson send formData and response json
-func HttpSendFormResJson(url, method string, formData map[string]string, result interface{}) (res *resty.Response, err error) {
+func HttpSendFormResJson(url, method string, formData map[string]string, headers map[string]string, result interface{}) (res *resty.Response, err error) {
 	client := resty.New()
 
 	client.SetTimeout(time.Second * httpClientTimeOut)
@@ -40,7 +44,10 @@ func HttpSendFormResJson(url, method string, formData map[string]string, result 
 		SetHeader("Accept", "application/json").
 		SetFormData(formData).
 		SetResult(result)
-
+	//设置header头
+	for key, value := range headers {
+		req = req.SetHeader(key, value)
+	}
 	switch strings.ToLower(method) {
 	case "post":
 		res, err = req.Post(url)
@@ -60,7 +67,7 @@ func HttpSendFormResJson(url, method string, formData map[string]string, result 
 }
 
 // HttpSendJsonResJson send json and response json
-func HttpSendJsonResJson(url, method string, body interface{}, result interface{}) (res *resty.Response, err error) {
+func HttpSendJsonResJson(url, method string, body interface{}, headers map[string]string, result interface{}) (res *resty.Response, err error) {
 	client := resty.New()
 
 	client.SetTimeout(time.Second * httpClientTimeOut)
@@ -72,7 +79,10 @@ func HttpSendJsonResJson(url, method string, body interface{}, result interface{
 		SetHeader("Accept", "application/json").
 		SetBody(body).
 		SetResult(result)
-
+	//设置header头
+	for key, value := range headers {
+		req = req.SetHeader(key, value)
+	}
 	switch strings.ToLower(method) {
 	case "post":
 		res, err = req.Post(url)
