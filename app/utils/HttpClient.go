@@ -66,6 +66,37 @@ func HttpSendFormResJson(url, method string, formData map[string]string, headers
 	return res, err
 }
 
+func HttpSendXmlResJson(url, method string, body interface{}, headers map[string]string, result interface{}) (res *resty.Response, err error) {
+	client := resty.New()
+
+	client.SetTimeout(time.Second * httpClientTimeOut)
+	client.SetRetryCount(httpClientRetryCount)
+	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	req := client.R().
+		SetBody(body).
+		SetResult(result)
+	//设置header头
+	for key, value := range headers {
+		req = req.SetHeader(key, value)
+	}
+	switch strings.ToLower(method) {
+	case "post":
+		res, err = req.Post(url)
+	case "put":
+		res, err = req.Put(url)
+	case "patch":
+		res, err = req.Patch(url)
+	case "delete":
+		res, err = req.Delete(url)
+	case "options":
+		res, err = req.Options(url)
+	default:
+		res, err = req.Head(url)
+	}
+
+	return res, err
+}
+
 // HttpSendJsonResJson send json and response json
 func HttpSendJsonResJson(url, method string, body interface{}, headers map[string]string, result interface{}) (res *resty.Response, err error) {
 	client := resty.New()
