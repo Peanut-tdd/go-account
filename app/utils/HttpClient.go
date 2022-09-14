@@ -66,6 +66,40 @@ func HttpSendFormResJson(url, method string, formData map[string]string, headers
 	return res, err
 }
 
+// HttpSendXmlResDownLoad send xml and download
+func HttpSendXmlResDownLoad(url, method string, body interface{}, headers map[string]string, result interface{}) (res *resty.Response, err error) {
+	client := resty.New()
+
+	client.SetTimeout(time.Second * httpClientTimeOut)
+	client.SetRetryCount(httpClientRetryCount)
+	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	req := client.R().
+		SetBody(body).
+		SetOutput("./test.csv").
+		SetResult(result)
+	//设置header头
+	for key, value := range headers {
+		req = req.SetHeader(key, value)
+	}
+	switch strings.ToLower(method) {
+	case "post":
+		res, err = req.Post(url)
+	case "put":
+		res, err = req.Put(url)
+	case "patch":
+		res, err = req.Patch(url)
+	case "delete":
+		res, err = req.Delete(url)
+	case "options":
+		res, err = req.Options(url)
+	default:
+		res, err = req.Head(url)
+	}
+
+	return res, err
+}
+
+// HttpSendXmlResJson send xml and response json
 func HttpSendXmlResJson(url, method string, body interface{}, headers map[string]string, result interface{}) (res *resty.Response, err error) {
 	client := resty.New()
 
@@ -98,7 +132,7 @@ func HttpSendXmlResJson(url, method string, body interface{}, headers map[string
 }
 
 // HttpSendJsonResJson send json and response json
-func HttpSendJsonResJson(url, method string, body interface{}, headers map[string]string, result interface{}) (res *resty.Response, err error) {
+func HttpSendJsonResJson(url, method string, body interface{}, queryData map[string]string, headers map[string]string, result interface{}) (res *resty.Response, err error) {
 	client := resty.New()
 
 	client.SetTimeout(time.Second * httpClientTimeOut)
@@ -109,6 +143,7 @@ func HttpSendJsonResJson(url, method string, body interface{}, headers map[strin
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Accept", "application/json").
 		SetBody(body).
+		SetQueryParams(queryData).
 		SetResult(result)
 	//设置header头
 	for key, value := range headers {

@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto/md5"
 	"fmt"
+	"log"
 	"sort"
 )
 
@@ -27,6 +28,7 @@ func MD5Params(params map[string]string, key string, filters []string) string {
 	for _, v := range newKeys {
 		originStr += fmt.Sprintf("%v=%v&", v, params[v])
 	}
+	log.Println(originStr)
 	originStr += fmt.Sprintf("key=%v", key)
 	// 使用md5算法进行处理
 	sign := MD5(originStr)
