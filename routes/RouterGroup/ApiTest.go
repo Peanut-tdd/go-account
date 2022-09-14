@@ -3,6 +3,7 @@ package RouterGroup
 import (
 	"account_check/app/Http/Middlewares"
 	"account_check/app/Http/controller"
+	"account_check/app/http/controller/bill"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,4 +24,6 @@ func ApiTest(route *gin.Engine) {
 	})
 
 	gen.GET("test", controller.Zzzz)
+
+	gen.GET("wx", bill.WxBill)
 }

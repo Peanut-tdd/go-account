@@ -1,7 +1,5 @@
 package command
 
-import "fmt"
-
 func Test() {
-	fmt.Print("---------------测试---------------")
+	//fmt.Print("---------------测试---------------")
 }
