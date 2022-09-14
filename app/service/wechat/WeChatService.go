@@ -9,8 +9,8 @@ import (
 
 //GetBills 获得账单信息
 func GetBills(request map[string]string) {
-	//ReadCsv("./test.csv")
-	//return
+	ReadCsv("./test.csv")
+	return
 	sign := utils.MD5Params(request, "636x44f9y3OqN65DRbrh4Zqydobt6MBW", nil)
 	request["sign"] = sign
 	//map转xml

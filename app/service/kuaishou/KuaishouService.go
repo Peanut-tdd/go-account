@@ -29,5 +29,5 @@ func getToken(request map[string]string) {
 	request["app_secret"] = "DpgS_kpK93Nq5cJUsRMp2A"
 	request["grant_type"] = "client_credentials"
 	res, _ := utils.HttpSendFormResJson("https://open.kuaishou.com/oauth2/access_token", "post", request, nil, "")
-	log.Print(res)
+	log.Print(res.String())
 }
