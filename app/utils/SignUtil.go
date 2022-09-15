@@ -3,11 +3,11 @@ package utils
 import (
 	"crypto/md5"
 	"fmt"
-	"log"
 	"sort"
+	"strings"
 )
 
-func MD5Params(params map[string]string, key string, filters []string) string {
+func MD5Params(params map[string]string, key string, filters []string, platform string) string {
 	// 将请求参数的key提取出来，并排好序
 	newKeys := make([]string, 0)
 	for k, _ := range params {
@@ -28,8 +28,12 @@ func MD5Params(params map[string]string, key string, filters []string) string {
 	for _, v := range newKeys {
 		originStr += fmt.Sprintf("%v=%v&", v, params[v])
 	}
-	log.Println(originStr)
-	originStr += fmt.Sprintf("key=%v", key)
+	if platform == "WECHAT" {
+		originStr += fmt.Sprintf("key=%v", key)
+	} else if platform == "KS" {
+		originStr = strings.Trim(originStr, "&") + key
+	}
+
 	// 使用md5算法进行处理
 	sign := MD5(originStr)
 

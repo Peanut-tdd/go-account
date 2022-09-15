@@ -9,14 +9,12 @@ import (
 
 //GetBills 获得账单信息
 func GetBills(request map[string]string) {
-	ReadCsv("./test.csv")
-	return
-	sign := utils.MD5Params(request, "636x44f9y3OqN65DRbrh4Zqydobt6MBW", nil)
+	sign := utils.MD5Params(request, "636x44f9y3OqN65DRbrh4Zqydobt6MBW", nil, "WECHAT")
 	request["sign"] = sign
 	//map转xml
 	params := toXml(request)
 	//http请求
-	res, _ := utils.HttpSendXmlResDownLoad("https://api.mch.weixin.qq.com/pay/downloadbill", "post", params, nil, "")
+	res, _ := utils.HttpSendBodyResDownLoad("https://api.mch.weixin.qq.com/pay/downloadbill", "post", params, nil, nil, "./test.csv", "")
 	log.Print(res.String())
 	//resArr := strings.Split(res.String(), "\r\n")
 	//for _, v := range resArr {

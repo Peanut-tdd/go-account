@@ -5,21 +5,22 @@ import (
 	"log"
 )
 
-//getBills 获得快手账单
+//GetBills 获得快手账单
 func GetBills(request map[string]string) {
+	//getToken(request)
+	//return
 
-	sign := utils.MD5Params(request, "DpgS_kpK93Nq5cJUsRMp2A", nil)
-	log.Println(sign)
+	sign := utils.MD5Params(request, "DpgS_kpK93Nq5cJUsRMp2A", nil, "KS")
 	request["sign"] = sign
 	//获得url参数字段
-	return
+
 	var queryForm = make(map[string]string)
 	queryForm["app_id"] = request["app_id"]
-	queryForm["access_token"] = "ChFvYXV0aC5hY2Nlc3NUb2tlbhIwjQRCzKzDFUZcvobputGJDxLJHNY1VrjKW84lTh_yfUyp36TN1CU2yqNI53P0qUm0GhKLDWZIFONJcLwT16HoOA7b3moiINfxOPxEJFP1llu0PE-9VAjfEcBAFMZeE_wVcTPPYnnZKAUwAQ"
-	//getToken(request)
+	queryForm["access_token"] = "ChFvYXV0aC5hY2Nlc3NUb2tlbhIwgw5lycA7JOMGAJ2VU7H3tqlH9r0h4NZajlCKzvXgDjaofFkjoIRdpUyGkJBHogYQGhK2-ObXGzJKd7El7e1ZzY3H690iIKbeu3gcvM6etFlTTsV-jWsFDgecGy1b-6fZ1OrUfokgKAUwAQ" //getToken(request)
 	//request["access_token"] = "ChFvYXV0aC5hY2Nlc3NUb2tlbhIwjQRCzKzDFUZcvobputGJDxLJHNY1VrjKW84lTh_yfUyp36TN1CU2yqNI53P0qUm0GhKLDWZIFONJcLwT16HoOA7b3moiINfxOPxEJFP1llu0PE-9VAjfEcBAFMZeE_wVcTPPYnnZKAUwAQ"
 
-	res, _ := utils.HttpSendJsonResJson("https://open.kuaishou.com/openapi/mp/developer/epay/query_bill", "post", request, queryForm, nil, "")
+	res, _ := utils.HttpSendBodyResDownLoad("https://open.kuaishou.com/openapi/mp/developer/epay/query_bill", "post", request, queryForm, nil, "./test.zip", "")
+
 	log.Print(res)
 }
 

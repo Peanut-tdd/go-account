@@ -2,12 +2,18 @@ package main
 
 import (
 	"account_check/app/service/kuaishou"
+	"account_check/app/utils"
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
 var HttpServer *gin.Engine
 
 func main() {
+	//压缩文件解压测试
+	err := utils.Unzip("test.csv.zip", ".")
+	fmt.Println("err is", err)
+	return
 	//-------------------快手拉去账单测试
 	var request = make(map[string]string)
 	request["app_id"] = "ks695806146341101215"
