@@ -22,7 +22,7 @@ func InitMysql() {
 		GVA_VP.GetString("mysql.host"),
 		GVA_VP.GetString("mysql.port"),
 		GVA_VP.GetString("mysql.database"),
-		GVA_VP.GetString("mysql.chartset"),
+		GVA_VP.GetString("mysql.charset"),
 		GVA_VP.GetString("mysql.timeout"),
 	)
 

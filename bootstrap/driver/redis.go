@@ -9,7 +9,7 @@ import (
 
 func InitRedis() {
 	R_DB = redis.NewClient(&redis.Options{ // 连接服务
-		Addr:     GVA_VP.GetString("redis.adress"),   // string
+		Addr:     GVA_VP.GetString("redis.address"),  // string
 		Password: GVA_VP.GetString("redis.password"), // string
 		DB:       GVA_VP.GetInt("redis.database"),    // int
 	})
