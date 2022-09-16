@@ -1,13 +1,16 @@
 package driver
 
 import (
+	"account_check/config"
 	"flag"
 	"fmt"
-
 	"github.com/spf13/viper"
+	"log"
 )
 
 var Config *viper.Viper
+
+var AllConfig *config.Config
 
 //配置文件加载
 func InitConfig() {
@@ -23,6 +26,14 @@ func InitConfig() {
 		fmt.Println("init fail:", err.Error())
 	}
 	GVA_VP = Config
+
+	err := Config.Unmarshal(&AllConfig)
+	if err != nil {
+		log.Print(err.Error())
+	}
+
+	//fmt.Println(AllConfig)
+
 }
 
 //获得当前环境对应的配置信息

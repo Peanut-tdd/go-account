@@ -1,27 +1,24 @@
 package main
 
 import (
-	"account_check/app/service/kuaishou"
-	"account_check/app/utils"
-	"fmt"
+	"account_check/bootstrap"
 	"github.com/gin-gonic/gin"
-	"math/rand"
 )
 
 var HttpServer *gin.Engine
 
 func main() {
 	//压缩文件解压测试
-	err := utils.Unzip("test.csv.zip", ".")
-	fmt.Println("err is", err)
-	return
+	//err := utils.Unzip("test.csv.zip", ".")
+	//fmt.Println("err is", err)
+	//return
 	//-------------------快手拉去账单测试
-	var request = make(map[string]string)
-	request["app_id"] = "ks695806146341101215"
-	request["start_date"] = "20220819000000"
-	request["end_date"] = "20220820000000"
-	request["bill_type"] = "PAY"
-	kuaishou.GetBills(request)
+	//var request = make(map[string]string)
+	//request["app_id"] = "ks695806146341101215"
+	//request["start_date"] = "20220819000000"
+	//request["end_date"] = "20220820000000"
+	//request["bill_type"] = "PAY"
+	//kuaishou.GetBills(request)
 
 	//-------------------微信拉去账单测试
 	//var request = make(map[string]string)
@@ -35,7 +32,7 @@ func main() {
 	//
 	//wechat.GetBills(request)
 	// 启动服务
-	//bootstrap.App(HttpServer)
+	bootstrap.App(HttpServer)
 
 	return
 }
