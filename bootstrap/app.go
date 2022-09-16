@@ -1,9 +1,11 @@
 package bootstrap
 
 import (
+	"account_check/bootstrap/driver"
 	"account_check/routes"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,7 +33,7 @@ func App(HttpServer *gin.Engine) {
 	// 初始化定时器（立即运行定时器）
 
 	// 实际访问网址和端口
-	host := "0.0.0.0:2222"
+	host := driver.AllConfig.Server.Host + ":" + strconv.Itoa(driver.AllConfig.Server.Port)
 
 	// 终端提示
 	err := HttpServer.Run(host)

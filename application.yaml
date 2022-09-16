@@ -17,3 +17,8 @@ wx:
   appid: wxe814fe9772dcc6df
   mchid: 1616436352
   key: 636x44f9y3OqN65DRbrh4Zqydobt6MBW
+
+
+server:
+  host: 0.0.0.0
+  port: 2222

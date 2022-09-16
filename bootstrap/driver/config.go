@@ -32,7 +32,9 @@ func InitConfig() {
 		log.Print(err.Error())
 	}
 
-	//fmt.Println(AllConfig)
+	mysql := AllConfig.GetKeyValue("Mysql", nil)
+
+	fmt.Println(mysql)
 
 }
 
