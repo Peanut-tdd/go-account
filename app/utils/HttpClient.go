@@ -66,8 +66,8 @@ func HttpSendFormResJson(url, method string, formData map[string]string, headers
 	return res, err
 }
 
-// HttpSendXmlResDownLoad send xml and download
-func HttpSendXmlResDownLoad(url, method string, body interface{}, headers map[string]string, result interface{}) (res *resty.Response, err error) {
+// HttpSendBodyResDownLoad send xml and download
+func HttpSendBodyResDownLoad(url, method string, body interface{}, queryData map[string]string, headers map[string]string, filepath string, result interface{}) (res *resty.Response, err error) {
 	client := resty.New()
 
 	client.SetTimeout(time.Second * httpClientTimeOut)
@@ -75,7 +75,8 @@ func HttpSendXmlResDownLoad(url, method string, body interface{}, headers map[st
 	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
 	req := client.R().
 		SetBody(body).
-		SetOutput("./test.csv").
+		SetQueryParams(queryData).
+		SetOutput(filepath).
 		SetResult(result)
 	//设置header头
 	for key, value := range headers {

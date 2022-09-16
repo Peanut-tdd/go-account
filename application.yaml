@@ -1,13 +1,13 @@
 mysql:
   host: 10.0.50.15
   port: 3306
-  username: duanju
-  password: netjoy@duanju
-  database: duanju
-  chartset: utf8mb4
+  username: root
+  password: 123456
+  database: test
+  charset: utf8
   timeout: 60s
 
 redis:
-  adress: 127.0.0.1:6379
+  address: 127.0.0.1:6379
   password:
   database: 0
