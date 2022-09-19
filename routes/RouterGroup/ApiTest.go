@@ -4,15 +4,12 @@ import (
 	"account_check/app/Http/Middlewares"
 	"account_check/app/Http/controller"
 	"account_check/app/http/controller/bill"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func ApiTest(route *gin.Engine) {
-	fmt.Println(1111111111)
-
 	api := route.Group("/api/", Middlewares.HttpCorsApi)
 
 	gen := api.Group("/gen1/")
@@ -31,5 +28,4 @@ func ApiTest(route *gin.Engine) {
 	gen.GET("wx", bill.WxBill)
 
 
-	fmt.Println(2222222222222)
 }

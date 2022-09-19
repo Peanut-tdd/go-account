@@ -3,17 +3,12 @@ package bill
 import (
 	"account_check/app/service/wechat"
 	"account_check/bootstrap/driver"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"math/rand"
 )
 
 func WxBill(c *gin.Context) {
 
-
-	//pwd,_:=filepath.Abs(filepath.Dir(os.Args[0]))
-	fmt.Println(1111111111)
-	return
 	var request = make(map[string]string)
 	request["appid"] = driver.AllConfig.Wx.AppId
 	request["mch_id"] = driver.AllConfig.Wx.MchId
