@@ -4,9 +4,8 @@ import (
 	"account_check/app/Http/Middlewares"
 	"account_check/app/Http/controller"
 	"account_check/app/http/controller/bill"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func ApiTest(route *gin.Engine) {
@@ -27,5 +26,10 @@ func ApiTest(route *gin.Engine) {
 
 	gen.GET("wx", bill.WxBill)
 
+	//
+	//utils.RedisSet("name", "aaaaa", time.Second*60)
+	//value := utils.RedisGet("name")
+	//
+	//fmt.Println(value)
 
 }

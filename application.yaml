@@ -8,8 +8,8 @@ mysql:
   timeout: 60s
 
 redis:
-  address: 127.0.0.1:6379
-  password:
+  address: 10.0.50.15:6379
+  password: netjoy@duanju
   database: 0
 
 

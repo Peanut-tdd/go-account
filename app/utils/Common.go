@@ -3,7 +3,8 @@ package utils
 import (
 	"time"
 )
-const STORAGE =  "./storage"
+
+const STORAGE = "./storage"
 
 func CurrentDateTime() string {
 	datetime := time.Now().Format("2006-01-02 15:04:05")
@@ -38,4 +39,13 @@ func CsvFilePath(sourceType int) string {
 
 	return STORAGE + "/download/" + CsvSource + "/" + dateTime + "_bill.csv"
 
+}
+
+
+/**
+字符串转时间
+ */
+func StringToTime(tm string) time.Time {
+	todayZero, _ := time.ParseInLocation("2006-01-02 15:04:05", tm, time.Local)
+	return todayZero
 }

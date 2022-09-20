@@ -1,6 +1,7 @@
 package wechat
 
 import (
+	"account_check/app/model"
 	"account_check/app/utils"
 	"account_check/bootstrap/driver"
 	"bufio"
@@ -9,6 +10,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
 //GetBills 获得账单信息
@@ -94,29 +97,42 @@ func ReadCsv(filepath string) {
 		log.Fatalf("can not readall, err is %+v", err)
 	}
 
-	fmt.Println(content)
+	//fmt.Println(content)
 
 	length := len(content) - 1
+
 	if length < 0 {
 		return
 	}
 	len := len(content)
 
+	bills := make(map[int]interface{})
 
-	type Bill struct {
-		Trade_No string
-		Amount string
-	}
-	//bills := make(map[string]interface{})
 	for index, item := range content {
 		if index < 1 || index > len-3 {
 			continue
 		}
 
+		//fmt.Printf("k:%v\n", index)
+		//fmt.Printf("item type: %T\n", item)
+		//fmt.Printf("value:%v\n", item)
+		//fmt.Printf("item:%v\n", item[0])
 
+		key := index - 1
+		sliceItem := strings.Split(strings.Replace(item[0], "`", "", -1), ",")
 
-		fmt.Println("k:%v,value:%v\n", index, item)
+		amount, _ := strconv.Atoi(sliceItem[12])
+		bills[key] = model.Bill{
+			sliceItem[5],
+			sliceItem[6],
+			utils.StringToTime(sliceItem[0]),
+			amount * 100,
+			3,
+		}
+		//return
+
 	}
+	fmt.Println(bills)
 
 	//os.Exit(1)
 }
