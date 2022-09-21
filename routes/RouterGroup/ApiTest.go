@@ -26,6 +26,8 @@ func ApiTest(route *gin.Engine) {
 
 	gen.GET("wx", bill.WxBill)
 
+	gen.GET("ks", bill.KsBill)
+
 	//
 	//utils.RedisSet("name", "aaaaa", time.Second*60)
 	//value := utils.RedisGet("name")
