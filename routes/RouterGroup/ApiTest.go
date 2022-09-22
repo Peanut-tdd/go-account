@@ -30,6 +30,7 @@ func ApiTest(route *gin.Engine) {
 
 	gen.GET("wx", bill.WxBill)
 
+
 	//form-data
 	gen.POST("form", func(c *gin.Context) {
 		types := c.DefaultPostForm("type", "1")
@@ -67,6 +68,10 @@ func ApiTest(route *gin.Engine) {
 		//c.String(http.StatusOK, "%s \n", string(bodyByts))
 
 	})
+
+	gen.GET("ks", bill.KsBill)
+
+
 	//
 	//utils.RedisSet("name", "aaaaa", time.Second*60)
 	//value := utils.RedisGet("name")

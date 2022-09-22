@@ -42,8 +42,8 @@ func HttpSendFormResJson(url, method string, formData map[string]string, headers
 	req := client.R().
 		SetHeader("Content-Type", "application/x-www-form-urlencoded").
 		SetHeader("Accept", "application/json").
-		SetFormData(formData).
-		SetResult(result)
+		SetFormData(formData)
+	//SetResult(result)
 	//设置header头
 	for key, value := range headers {
 		req = req.SetHeader(key, value)
@@ -76,8 +76,7 @@ func HttpSendBodyResDownLoad(url, method string, body interface{}, queryData map
 	req := client.R().
 		SetBody(body).
 		SetQueryParams(queryData).
-		SetOutput(filepath).
-		SetResult(result)
+		SetOutput(filepath)
 	//设置header头
 	for key, value := range headers {
 		req = req.SetHeader(key, value)
