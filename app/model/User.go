@@ -2,9 +2,9 @@ package model
 
 import "time"
 
-type User struct {
-	ID        int64     `gorm:"primary"`
-	Username  string    `json:"username"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+type UserTest struct {
+	ID        uint     `gorm:"primary_key"`
+	Username  string
+	CreatedAt time.Time `gorm:"autoCreateTime;type:datetime"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime;type:datetime"`
 }

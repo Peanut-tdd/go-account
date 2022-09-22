@@ -97,44 +97,60 @@ func ReadCsv(filepath string) {
 		log.Fatalf("can not readall, err is %+v", err)
 	}
 
-	//fmt.Println(content)
-
 	length := len(content) - 1
 
 	if length < 0 {
 		return
 	}
-	len := len(content)
+	lencsv := len(content)
 
-	bills := make(map[int]interface{})
+	bills := []map[string]interface{}{}
+
+	sliceTradeNo := make([]string, lencsv)
 
 	for index, item := range content {
-		if index < 1 || index > len-3 {
+		if index < 1 || index > lencsv-3 {
 			continue
 		}
 
-		//fmt.Printf("k:%v\n", index)
-		//fmt.Printf("item type: %T\n", item)
-		//fmt.Printf("value:%v\n", item)
-		//fmt.Printf("item:%v\n", item[0])
-
-		key := index - 1
 		sliceItem := strings.Split(strings.Replace(item[0], "`", "", -1), ",")
+		amount, _ := strconv.ParseFloat(sliceItem[12], 64)
+		amount = amount * 100
 
-		amount, _ := strconv.Atoi(sliceItem[12])
-		bills[key] = model.Bill{
-			sliceItem[5],
-			sliceItem[6],
-			utils.StringToTime(sliceItem[0]),
-			amount * 100,
-			3,
-		}
-		//return
+		key, _ := strconv.Atoi(sliceItem[6])
+		fmt.Println(key)
+		return
+		bills[key]["Number"] = sliceItem[5]
+		bills[key]["TradeNo"] = sliceItem[6]
+		bills[key]["TradeAt"] = utils.StringToTime(sliceItem[0])
+		bills[key]["Amount"] = int(amount)
+		bills[key]["PlatformId"] = 3
+		bills[key]["Number"] = sliceItem[5]
+
+		fmt.Println(bills)
+		return
+
+		sliceTradeNo = append(sliceTradeNo, sliceItem[6])
 
 	}
-	fmt.Println(bills)
 
-	//os.Exit(1)
+	if len(sliceTradeNo) == 0 {
+		return
+	}
+
+	trade_no := make([]string, lencsv)
+	driver.GVA_DB.Model(&model.OrderBill{}).Pluck("trade_no", &trade_no)
+
+	fmt.Println(trade_no)
+	return
+
+	driver.GVA_DB.Create(&bills)
+
+	return
+	//for _, b := range bills {
+	//	fmt.Println(b.ID)
+	//}
+
 }
 
 //toXml map转xml

@@ -13,7 +13,7 @@ import (
 var gErr error
 
 func InitGorm() {
-	dbDSN := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local&timeout=%s",
+	dbDSN := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local&timeout=%s&parseTime=true",
 		GVA_VP.GetString("mysql.username"),
 		GVA_VP.GetString("mysql.password"),
 		GVA_VP.GetString("mysql.host"),

@@ -8,7 +8,7 @@ import (
 )
 
 func Zzzz(ctx *gin.Context) {
-	res := []model.User{{Username: "test"}}
+	res := []model.UserTest{{Username: "test"}}
 
 	//添加
 	// driver.GVA_DB.Create(&res)
