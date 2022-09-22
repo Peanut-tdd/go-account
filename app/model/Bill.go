@@ -9,8 +9,7 @@ type OrderBill struct {
 	TradeAt    time.Time `gorm:"type:datetime"`
 	Amount     int       `gorm:"type:int;not null;default 0"`
 	PlatformId uint8     `gorm:"type:tinyint;not null;default 1"`
+	PayChannel uint8     `gorm:"type:tinyint;not null;default 1"`
 	CreatedAt  time.Time `gorm:"type:datetime"`
 	UpdatedAt  time.Time `gorm:"type:datetime"`
 }
-
-

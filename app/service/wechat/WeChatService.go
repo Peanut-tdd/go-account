@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -96,16 +97,15 @@ func ReadCsv(filepath string) {
 	if err != nil {
 		log.Fatalf("can not readall, err is %+v", err)
 	}
-
+	//csv长度判断
 	length := len(content) - 1
-
 	if length < 0 {
 		return
 	}
+
 	lencsv := len(content)
 
-	bills := []map[string]interface{}{}
-
+	mapBill := make(map[string]map[string]interface{})
 	sliceTradeNo := make([]string, lencsv)
 
 	for index, item := range content {
@@ -117,18 +117,14 @@ func ReadCsv(filepath string) {
 		amount, _ := strconv.ParseFloat(sliceItem[12], 64)
 		amount = amount * 100
 
-		key, _ := strconv.Atoi(sliceItem[6])
-		fmt.Println(key)
-		return
-		bills[key]["Number"] = sliceItem[5]
-		bills[key]["TradeNo"] = sliceItem[6]
-		bills[key]["TradeAt"] = utils.StringToTime(sliceItem[0])
-		bills[key]["Amount"] = int(amount)
-		bills[key]["PlatformId"] = 3
-		bills[key]["Number"] = sliceItem[5]
-
-		fmt.Println(bills)
-		return
+		key := sliceItem[6]
+		mapBill[key] = map[string]interface{}{
+			"Number":     sliceItem[5],
+			"TradeNo":    sliceItem[6],
+			"TradeAt":    utils.StringToTime(sliceItem[0]),
+			"Amount":     int(amount),
+			"PlatformId": 3,
+		}
 
 		sliceTradeNo = append(sliceTradeNo, sliceItem[6])
 
@@ -137,14 +133,34 @@ func ReadCsv(filepath string) {
 	if len(sliceTradeNo) == 0 {
 		return
 	}
+fmt.Println(sliceTradeNo)
+	return
+	db_trade_no := make([]string, lencsv)
+	driver.GVA_DB.Model(&model.OrderBill{}).Where("trade_no in ?", sliceTradeNo).Pluck("trade_no", &db_trade_no)
 
-	trade_no := make([]string, lencsv)
-	driver.GVA_DB.Model(&model.OrderBill{}).Pluck("trade_no", &trade_no)
+	insertSliceMapBills := make([]map[string]interface{}, 0)
+	updateSliceMapBills := make([]map[string]interface{}, 0)
 
-	fmt.Println(trade_no)
+	for _, trade_no := range db_trade_no {
+		if value, ok := mapBill[trade_no]; ok {
+			updateSliceMapBills = append(updateSliceMapBills, value)
+		} else {
+			insertSliceMapBills = append(insertSliceMapBills, value)
+		}
+	}
+
+	fmt.Print(updateSliceMapBills)
+	return
+	if len(insertSliceMapBills) == 0 {
+		return
+	}
+
+	v1, _ := json.Marshal(insertSliceMapBills)
+	fmt.Println(v1)
 	return
 
-	driver.GVA_DB.Create(&bills)
+	//插入数据
+	driver.GVA_DB.Model(&model.OrderBill{}).Create(insertSliceMapBills)
 
 	return
 	//for _, b := range bills {
