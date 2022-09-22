@@ -4,8 +4,6 @@ import (
 	"account_check/app/Http/Middlewares"
 	"account_check/app/Http/controller"
 	"account_check/app/http/controller/bill"
-	"account_check/app/model"
-	"account_check/bootstrap/driver"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -83,12 +81,12 @@ func ApiTest(route *gin.Engine) {
 	//driver.GVA_DB.Create(&user) // 通过数据的指针来创
 
 	//1
-	a := model.OrderBill{}
-	driver.GVA_DB.Where("id=?", 1).First(&a)
-	//for _, item := range a {
-	//	fmt.Println(item.Username)
-	//}
-	fmt.Println(a)
+	//a := model.OrderBill{}
+	//driver.GVA_DB.Where("id=?", 1).First(&a)
+	////for _, item := range a {
+	////	fmt.Println(item.Username)
+	////}
+	//fmt.Println(a)
 
 	//2
 	//result := make([]map[string]interface{},0)
