@@ -1,6 +1,10 @@
 package utils
 
 import (
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -25,15 +29,23 @@ func CurrentYmd() string {
 }
 
 //CsvFileDir 生成下载文件地址
-func CsvFileDir(sourceType int) string {
+func CsvFileDir(sourceType int, payChannel int) string {
 	var fileDir string
+	fileDir = STORAGE + "/download"
 	switch sourceType {
 	//微信
 	case 1:
-		fileDir = STORAGE + "/download/wx/"
+		fileDir = fileDir + "/wx/"
 		break
 	case 2: //快手
-		fileDir = STORAGE + "/download/ks/" + CurrentYmd() + "/"
+		fileDir = fileDir + "/ks/" + CurrentYmd() + "/"
+		break
+	case 4: //快应用
+		switch payChannel {
+		case 2: //支付宝
+			fileDir = fileDir + "/fapp/alipay/" + CurrentYmd() + "/"
+			break
+		}
 		break
 	}
 	return fileDir
@@ -51,13 +63,15 @@ func CsvFileName(sourceType int) string {
 	case 2: //快手
 		filename = dateTime + "_bill.zip"
 		break
+	case 4:
+		filename = dateTime + "_bill.zip"
 	}
 
 	return filename
 }
 
-func CsvFilePath(sourceType int) string {
-	return CsvFileDir(sourceType) + CsvFileName(sourceType)
+func CsvFilePath(sourceType int, payChannel int) string {
+	return CsvFileDir(sourceType, payChannel) + CsvFileName(sourceType)
 }
 
 //StringToTime 字符串转时间
@@ -103,4 +117,46 @@ func Arrcmp(src []string, dest []string) ([]string, []string) {
 	}
 
 	return deleted, added
+}
+
+func CheckInsertData(db_trade_no []string, insertSliceMapBills []map[string]interface{}, mapBills map[string]map[string]interface{}) []map[string]interface{} {
+	if len(db_trade_no) == 0 {
+		for _, value := range mapBills {
+			insertSliceMapBills = append(insertSliceMapBills, value)
+		}
+	} else {
+		for _, trade_no := range db_trade_no {
+			if value, ok := mapBills[trade_no]; ok {
+				//updateSliceMapBills = append(updateSliceMapBills, value)
+			} else {
+				insertSliceMapBills = append(insertSliceMapBills, value)
+			}
+		}
+	}
+	return insertSliceMapBills
+}
+
+func UrlDownLoad(url string, path string) {
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	// Create output file
+	err = os.MkdirAll(filepath.Dir(path), os.ModeDir)
+	if err != nil {
+		panic(err)
+	}
+
+	out, err := os.Create(path)
+	if err != nil {
+		panic(err)
+	}
+	defer out.Close()
+	// copy stream
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		panic(err)
+	}
 }

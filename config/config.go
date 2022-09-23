@@ -5,6 +5,7 @@ type Config struct {
 	Redis  `yaml:"redis" json:"redis"`
 	Wx     `yaml:"wx" json:"wx"`
 	Server `yaml:"server" json:"server"`
+	Fapp   `yaml:"fapp" json:"fapp"`
 }
 
 type GetConfig interface {
@@ -12,8 +13,6 @@ type GetConfig interface {
 }
 
 func (c *Config) GetKeyValue(item interface{}, key interface{}) (value interface{}) {
-
-
 
 	switch item {
 

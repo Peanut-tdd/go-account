@@ -28,5 +28,6 @@ func ApiTest(route *gin.Engine) {
 
 	gen.GET("ks", bill.KsBill)
 
+	gen.GET("alipay", bill.FalipayBill)
 
 }

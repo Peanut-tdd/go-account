@@ -25,7 +25,7 @@ func GetBills(request map[string]string) {
 	//map转xml
 	params := toXml(request)
 	//http请求
-	filepath := utils.CsvFilePath(1)
+	filepath := utils.CsvFilePath(1, 1)
 	res, err := utils.HttpSendBodyResDownLoad("https://api.mch.weixin.qq.com/pay/downloadbill", "post", params, nil, nil, filepath, "")
 
 	if err != nil {
@@ -123,49 +123,38 @@ func ReadCsv(filepath string) {
 			"TradeAt":    utils.StringToTime(sliceItem[0]),
 			"Amount":     int(amount),
 			"PlatformId": 3,
-			"CreatedAt":utils.CurrentDateTime(),
-			"UpdatedAt":utils.CurrentDateTime(),
+			"CreatedAt":  utils.CurrentDateTime(),
+			"UpdatedAt":  utils.CurrentDateTime(),
 		}
 
 		sliceTradeNo = append(sliceTradeNo, sliceItem[6])
 
 	}
 
-
 	if len(sliceTradeNo) == 0 {
 		return
 	}
 
-	db_trade_no := make([]string, lencsv)
+	//判断数据新增还是编辑
+	db_trade_no := make([]string, 0)
 	driver.GVA_DB.Model(&model.OrderBill{}).Where("trade_no in ?", sliceTradeNo).Pluck("trade_no", &db_trade_no)
 
 	insertSliceMapBills := make([]map[string]interface{}, 0)
 	//updateSliceMapBills := make([]map[string]interface{}, 0)
-
-	if len(db_trade_no) == 0 {
-		for _, value := range mapBills {
-			insertSliceMapBills = append(insertSliceMapBills, value)
-		}
-	} else {
-		for _, trade_no := range db_trade_no {
-			if value, ok := mapBills[trade_no]; ok {
-				//updateSliceMapBills = append(updateSliceMapBills, value)
-			} else {
-				insertSliceMapBills = append(insertSliceMapBills, value)
-			}
-		}
-	}
+	insertSliceMapBills = utils.CheckInsertData(db_trade_no, insertSliceMapBills, mapBills)
 
 	if len(insertSliceMapBills) == 0 {
 		return
 	}
-
 
 	//插入数据
 	driver.GVA_DB.Model(&model.OrderBill{}).Create(insertSliceMapBills)
 	return
 
 }
+
+
+
 
 //toXml map转xml
 func toXml(params map[string]string) string {
