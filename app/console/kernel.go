@@ -17,7 +17,8 @@ func InitConsole() {
 	c := newWithSeconds()
 
 	//todo 此处添加对应的定时任务方法
-	c.AddFunc("*/5 * * * * ?", command.Test)
+	//c.AddFunc("*/5 * * * * ?", command.Test)
+	c.AddFunc("*/5 * * * * ?", command.KsPayCompare)
 
 	c.Start()
 	//加载会阻塞
