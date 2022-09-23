@@ -2,15 +2,36 @@ package command
 
 import (
 	"account_check/app/model"
+	"account_check/app/service/dingding"
 	"account_check/app/service/kuaishou"
 	"account_check/app/utils"
 	"account_check/bootstrap/driver"
-	"fmt"
+	"strconv"
 	"time"
 )
 
+func PayCompare() {
+
+	//快手账单message
+	ksBillDiffNumbers, ksOrderDiffNumbers := KsPayCompare()
+	var message string
+	ksCount := len(ksBillDiffNumbers) + len(ksOrderDiffNumbers)
+	if ksCount > 0 {
+		message += "\n\n--------------------\n\n快手账单异常，异常数：" + strconv.Itoa(ksCount)
+	}
+	//todo 微信账单message
+
+	//todo 支付宝账单
+
+	title := "充值对账异常账单提醒"
+	if message != "" {
+		sendMessage(title+message, title)
+	}
+}
+
 //KsPayCompare 快手比较
-func KsPayCompare() {
+func KsPayCompare() ([]string, []string) {
+
 	//获得前一天时间
 	//currentTime := time.Now()
 	currentTime, _ := time.Parse("2006-01-02 15:04:05", "2022-08-20 00:00:00")
@@ -27,9 +48,8 @@ func KsPayCompare() {
 	//订单号对比，如果存在差异，发送钉钉消息
 	billDiffNumbers, orderDiffNumbers := utils.Arrcmp(billNumbers, orderNumbers)
 
-	fmt.Println(billDiffNumbers)
-	fmt.Println("------------------------")
-	fmt.Println(orderDiffNumbers)
+	return billDiffNumbers, orderDiffNumbers
+
 }
 
 //syncKsBill 同步快手账单
@@ -73,6 +93,7 @@ func getOrderNumbers(platFormId int, payChannel int, startDate string, endData s
 	return numbers
 }
 
-//3-查询order表近3天快手支付成功订单
-
 //4-快手数据与order查询数据比较，并钉钉通知
+func sendMessage(message string, title string) {
+	dingding.SendGroup(message, "chat2ec214da47216a95e7ee73ee3760d191", title)
+}

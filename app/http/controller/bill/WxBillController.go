@@ -8,7 +8,6 @@ import (
 )
 
 func WxBill(c *gin.Context) {
-
 	var request = make(map[string]string)
 	request["appid"] = driver.AllConfig.Wx.AppId
 	request["mch_id"] = driver.AllConfig.Wx.MchId
