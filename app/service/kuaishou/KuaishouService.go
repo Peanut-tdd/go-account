@@ -23,13 +23,18 @@ func GetBills(request map[string]string) {
 	queryForm["app_id"] = request["app_id"]
 	queryForm["access_token"] = getToken(request)
 	//获得下载账单
-	filepath := utils.CsvFilePath(2,1)
+	filepath := utils.CsvFilePath(2, 1)
 	//生成下载文件
 	utils.HttpSendBodyResDownLoad("https://open.kuaishou.com/openapi/mp/developer/epay/query_bill", "post", request, queryForm, nil, filepath, "")
 	//解压账单
-	utils.Unzip(filepath, utils.CsvFileDir(2,1))
+
+	err := utils.Unzip(filepath, utils.CsvFileDir(2, 1))
+	if err == nil {
+		//todo 打印日志
+		return
+	}
 	//获取文件夹下所有的文件
-	files, _ := utils.TPFuncReadDirFiles(utils.CsvFileDir(2,1))
+	files, _ := utils.TPFuncReadDirFiles(utils.CsvFileDir(2, 1))
 	for _, file := range files {
 		//获得当前的csv文件
 		if path.Ext(file) == ".csv" {

@@ -17,7 +17,7 @@ import (
 func Unzip(filepath string, dstDir string) error {
 	reader, err := zip.OpenReader(filepath)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer reader.Close()
 
