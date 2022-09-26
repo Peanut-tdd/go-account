@@ -20,7 +20,7 @@ func InitConsole() {
 	//c.AddFunc("*/5 * * * * ?", command.Test)
 	c.AddFunc("*/5 * * * * ?", command.PayCompare)
 
-	c.Start()
+	//c.Start()
 	//加载会阻塞
 	// select {}
 }

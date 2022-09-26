@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -26,12 +27,13 @@ func GetBills(request map[string]string) {
 	params := toXml(request)
 	//http请求
 	filepath := utils.CsvFilePath(1, 1)
-	res, err := utils.HttpSendBodyResDownLoad("https://api.mch.weixin.qq.com/pay/downloadbill", "post", params, nil, nil, filepath, "")
+	_, err := utils.HttpSendBodyResDownLoad("https://api.mch.weixin.qq.com/pay/downloadbill", "post", params, nil, nil, filepath, "")
 
 	if err != nil {
 		log.Fatal("获取csv文件信息失败，err is %+v", err)
 	}
-	log.Println(res.String())
+	//log.Println(res.String())
+
 	ReadCsv(filepath)
 	//resArr := strings.Split(res.String(), "\r\n")
 	//for _, v := range resArr {
@@ -80,7 +82,6 @@ func readCsvFromByte(str string) {
 }
 
 func ReadCsv(filepath string) {
-	fmt.Println(filepath)
 	csvFile, err := os.Open(filepath)
 	if err != nil {
 		log.Println("csv文件打开失败！")
@@ -96,6 +97,7 @@ func ReadCsv(filepath string) {
 	if err != nil {
 		log.Fatalf("can not readall, err is %+v", err)
 	}
+
 	//csv长度判断
 	length := len(content) - 1
 	if length < 0 {
@@ -108,6 +110,13 @@ func ReadCsv(filepath string) {
 	sliceTradeNo := make([]string, 0)
 
 	for index, item := range content {
+
+		re := regexp.MustCompile("<xml>")
+		match := re.MatchString(item[0])
+		if match {
+			break
+		}
+
 		if index < 1 || index > lencsv-3 {
 			continue
 		}
@@ -116,10 +125,10 @@ func ReadCsv(filepath string) {
 		amount, _ := strconv.ParseFloat(sliceItem[12], 64)
 		amount = amount * 100
 
-		key := sliceItem[6]
+		key := sliceItem[5]
 		mapBills[key] = map[string]interface{}{
-			"Number":     sliceItem[5],
-			"TradeNo":    sliceItem[6],
+			"Number":     sliceItem[6],
+			"TradeNo":    sliceItem[5],
 			"TradeAt":    utils.StringToTime(sliceItem[0]),
 			"Amount":     int(amount),
 			"PlatformId": 3,
@@ -127,7 +136,7 @@ func ReadCsv(filepath string) {
 			"UpdatedAt":  utils.CurrentDateTime(),
 		}
 
-		sliceTradeNo = append(sliceTradeNo, sliceItem[6])
+		sliceTradeNo = append(sliceTradeNo, sliceItem[5])
 
 	}
 
@@ -152,9 +161,6 @@ func ReadCsv(filepath string) {
 	return
 
 }
-
-
-
 
 //toXml map转xml
 func toXml(params map[string]string) string {

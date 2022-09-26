@@ -21,7 +21,7 @@ var (
 	client *alipay.AliPay
 )
 
-func BillQueryDownload() {
+func BillQueryDownload(billDate string) {
 
 	//请求
 	appID := driver.AllConfig.Fapp.Alipay.Appid
@@ -30,7 +30,7 @@ func BillQueryDownload() {
 
 	client := alipay.New(appID, aliPublicKey, privateKey, true)
 	pay := alipay.BillDownloadURLQuery{}
-	pay.BillDate = "2022-09-20"
+	pay.BillDate = billDate
 	pay.BillType = "trade"
 	res, err := client.BillDownloadURLQuery(pay)
 	if err != nil {
@@ -39,6 +39,10 @@ func BillQueryDownload() {
 
 	//下载解压
 	url := res.AliPayDataServiceBillDownloadURLQueryResponse.BillDownloadUrl
+	if url == "" {
+		return
+	}
+
 	filePath := utils.CsvFilePath(4, 2)
 	utils.UrlDownLoad(url, filePath)
 	utils.UnzipFile(filePath, utils.CsvFileDir(4, 2), "\u6c47\u603b")
@@ -120,7 +124,7 @@ func saveBillData(content [][]string) {
 			"Number":     sliceItem[1],
 			"TradeNo":    sliceItem[0],
 			"TradeAt":    sliceItem[5],
-			"Amount":     int(amount),
+			"Amount":     int(amount * 100),
 			"PlatformId": 4,
 			"PayChannel": 2,
 			"CreatedAt":  utils.CurrentDateTime(),
@@ -128,6 +132,7 @@ func saveBillData(content [][]string) {
 		}
 		sliceTradeNo = append(sliceTradeNo, sliceItem[0])
 	}
+
 
 	if len(sliceTradeNo) == 0 {
 		return
