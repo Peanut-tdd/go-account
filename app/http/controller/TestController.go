@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"account_check/app/console/command"
 	"account_check/app/model"
 	"account_check/bootstrap/driver"
 
@@ -27,5 +28,7 @@ func Zzzz(ctx *gin.Context) {
 	// })
 }
 
-
-
+func DeleteBillDir(c *gin.Context) {
+	command.DeleteBillDir()
+	c.JSONP(200, "success")
+}

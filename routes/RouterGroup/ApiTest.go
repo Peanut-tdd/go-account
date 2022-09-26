@@ -31,5 +31,8 @@ func ApiTest(route *gin.Engine) {
 	gen.GET("alipay", bill.FalipayBill)
 
 
+	gen.GET("delete_dir",controller.DeleteBillDir)
+
+
 
 }
