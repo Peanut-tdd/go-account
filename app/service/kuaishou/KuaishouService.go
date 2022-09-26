@@ -47,7 +47,7 @@ func GetBills(request map[string]string) {
 //getToken 获得快手token
 func getToken(request map[string]string) string {
 	token := utils.RedisGet(KS_TOKEN_KEY)
-	if token == nil {
+	if token == nil || token == "" {
 		request["app_id"] = driver.GVA_VP.GetString("ks.app_id")
 		request["app_secret"] = driver.GVA_VP.GetString("ks.app_secret")
 		request["grant_type"] = "client_credentials"

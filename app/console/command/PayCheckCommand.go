@@ -17,7 +17,7 @@ func PayCompare() {
 	var message string
 	ksCount := len(ksBillDiffNumbers) + len(ksOrderDiffNumbers)
 	if ksCount > 0 {
-		message += "\n\n--------------------\n\n快手账单异常，异常数：" + strconv.Itoa(ksCount)
+		message += "\n\n--------------------\n\n快手-账单异常，异常数：" + strconv.Itoa(ksCount)
 	}
 	//todo 微信账单message
 
