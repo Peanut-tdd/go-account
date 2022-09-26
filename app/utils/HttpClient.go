@@ -42,8 +42,10 @@ func HttpSendFormResJson(url, method string, formData map[string]string, headers
 	req := client.R().
 		SetHeader("Content-Type", "application/x-www-form-urlencoded").
 		SetHeader("Accept", "application/json").
-		SetFormData(formData).
-		SetResult(result)
+		SetFormData(formData)
+	if result != nil {
+		req = req.SetResult(result)
+	}
 	//设置header头
 	for key, value := range headers {
 		req = req.SetHeader(key, value)
