@@ -12,7 +12,6 @@ func SendGroup(message string, chatId string, title string) bool {
 	data["text"] = message
 	data["title"] = title
 	data["chat_id"] = chatId
-
 	res, _ := utils.HttpSendFormResJson(GroupUrl, "POST", data, nil, nil)
 	log.Println(res.String())
 
