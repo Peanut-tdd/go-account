@@ -33,6 +33,8 @@ func ApiTest(route *gin.Engine) {
 
 	gen.GET("delete_dir",controller.DeleteBillDir)
 
+	gen.GET("check_coin",controller.CheckCoin)
+
 
 
 }

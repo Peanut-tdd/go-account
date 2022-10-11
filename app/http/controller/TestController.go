@@ -4,7 +4,7 @@ import (
 	"account_check/app/console/command"
 	"account_check/app/model"
 	"account_check/bootstrap/driver"
-
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,4 +31,10 @@ func Zzzz(ctx *gin.Context) {
 func DeleteBillDir(c *gin.Context) {
 	command.DeleteBillDir()
 	c.JSONP(200, "success")
+}
+
+func CheckCoin(c *gin.Context) {
+	res:=command.Check()
+	fmt.Print(res)
+	c.JSONP(200,"success")
 }

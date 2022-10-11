@@ -1,7 +1,6 @@
 package bootstrap
 
 import (
-	"account_check/app/console"
 	"account_check/bootstrap/driver"
 )
 
@@ -13,6 +12,6 @@ func init() {
 	//加载redis
 	driver.InitRedis()
 
-	console.InitConsole()
+//	console.InitConsole()
 
 }
