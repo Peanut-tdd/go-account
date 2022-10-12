@@ -5,7 +5,33 @@ import (
 	"account_check/bootstrap/driver"
 	"fmt"
 	"log"
+	"math"
+	"strconv"
 )
+
+
+
+
+
+func CoinCheckMessage() {
+	var message string
+	count := PageCheck()
+
+	if count != 0 {
+		message += "\n\n--------------------\n\n异常账户数："+ strconv.Itoa(count)
+	}
+	title := "账户虚拟币对账异常"
+
+	if message != "" {
+		sendMessage(title+message, title)
+	}
+
+}
+
+
+
+
+
 
 func CoinCheck() {
 	coin := getCoinCount()
@@ -17,9 +43,7 @@ func CoinCheck() {
 	}
 }
 
-func UserCoinCheck() {
 
-}
 
 func getCoinCount() int {
 	var coin int
@@ -106,5 +130,55 @@ func Check() (isOk bool) {
 	}
 
 	return
+
+}
+
+
+/**
+分页查询
+*/
+func PageCheck() int {
+
+	var total int64
+	const PAGESIZE = 10
+
+	driver.GVA_DB.Model(&model.CoinFlow{}).Where("type", 2).Distinct("user_id").Count(&total)
+	if total == 0 {
+		return 0
+	}
+
+	var maxPage = int(math.Ceil(float64(total) / float64(PAGESIZE)))
+	type UserCoin struct {
+		UserId uint
+		Coin   uint
+		Income uint `gorm:"column:income_coin"`
+		Out    uint `gorm:"column:out_coin"`
+	}
+
+	var result []UserCoin
+	var errUserIds = make([]uint, 0)
+
+	for i := 1; i <= maxPage; i++ {
+		var offset = (i - 1) * PAGESIZE
+
+		iquery := driver.GVA_DB.Model(&model.CoinFlow{}).Select("user_id,sum(real_coin) as real_coin").Where("type", 2).Group("user_id")
+		oquery := driver.GVA_DB.Model(&model.CoinFlow{}).Select("user_id,sum(real_coin) as real_coin").Where("type", 1).Group("user_id")
+		driver.GVA_DB.Model(&model.UserAccount{}).Select("user_account.user_id,user_account.coin,i.real_coin as income_coin,o.real_coin as out_coin").Joins("join (?) i on i.user_id=user_account.user_id", iquery).
+			Joins("left join (?) o on o.user_id=user_account.user_id", oquery).Order("user_account.user_id asc").Limit(PAGESIZE).Offset(offset).Scan(&result)
+
+		for _, value := range result {
+			if value.Out == 0 { //无消费
+				if value.Coin != value.Income {
+					errUserIds = append(errUserIds, value.UserId)
+				}
+			} else { //有消费
+				if value.Coin != value.Income-value.Out {
+					errUserIds = append(errUserIds, value.UserId)
+				}
+			}
+		}
+
+	}
+	return len(errUserIds)
 
 }

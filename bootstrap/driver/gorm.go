@@ -1,13 +1,15 @@
 package driver
 
 import (
+	"account_check/app/mylogger"
 	"database/sql"
 	"fmt"
-	"log"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"log"
+	"time"
 )
 
 var gErr error
@@ -32,11 +34,26 @@ func InitGorm() {
 		log.Println("尝试连接GORM... ")
 	}
 
+	//记录sql日志
+	newLogger := logger.New(
+		log.New(mylogger.Logger, "", log.LstdFlags),
+
+		logger.Config{
+			SlowThreshold: 1 * time.Second,
+			LogLevel:      logger.Info,
+			Colorful:      false,
+		},
+	)
+
+
 	GVA_DB, gErr = gorm.Open(mysql.New(mysql.Config{
 		Conn: sqlDB,
 	}), &gorm.Config{
+	//	Logger: logger.Default.LogMode(logger.Info),
+		Logger:                 newLogger,
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
+
 		},
 	})
 

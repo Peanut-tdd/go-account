@@ -34,7 +34,8 @@ func DeleteBillDir(c *gin.Context) {
 }
 
 func CheckCoin(c *gin.Context) {
-	res:=command.Check()
+	//res:=command.Check()//不分页
+	res:= command.PageCheck()
 	fmt.Print(res)
-	c.JSONP(200,"success")
+	c.JSONP(200, "success")
 }
