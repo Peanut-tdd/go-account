@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -32,13 +33,13 @@ func InitMysql() {
 		panic("database data source name error: " + MysqlDbErr.Error())
 	}
 
-	// max open connections
-	// dbMaxOpenConns, _ := strconv.Atoi(dbConfig["DB_MAX_OPEN_CONNS"])
-	// MysqlDb.SetMaxOpenConns(dbMaxOpenConns)
+	//max open connections
+	dbMaxOpenConns, _ := strconv.Atoi(GVA_VP.GetString("mysql.max_open_cons"))
+	MysqlDb.SetMaxOpenConns(dbMaxOpenConns)
 
 	// max idle connections
-	// dbMaxIdleConns, _ := strconv.Atoi(dbConfig["DB_MAX_IDLE_CONNS"])
-	// MysqlDb.SetMaxIdleConns(dbMaxIdleConns)
+	dbMaxIdleConns, _ := strconv.Atoi(GVA_VP.GetString("mysql.max_idle_cons"))
+	MysqlDb.SetMaxIdleConns(dbMaxIdleConns)
 
 	// max lifetime of connection if <=0 will forever
 	// dbMaxLifetimeConns, _ := strconv.Atoi(dbConfig["DB_MAX_LIFETIME_CONNS"])
