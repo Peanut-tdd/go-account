@@ -4,6 +4,7 @@ import "time"
 
 type OrderBill struct {
 	ID         uint      `gorm:"primary_key"`
+	ProjectId  uint      `gorm:"not null;default 1"`
 	Number     string    `gorm:"type:varchar(50);index:idx_number;not null;default ''"`
 	TradeNo    string    `gorm:"type:varchar(50);index:index_trade_no;not null;default ''"`
 	TradeAt    time.Time `gorm:"type:datetime"`

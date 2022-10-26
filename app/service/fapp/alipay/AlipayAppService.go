@@ -21,12 +21,12 @@ var (
 	client *alipay.AliPay
 )
 
-func BillQueryDownload(billDate string) {
+func BillQueryDownload(payConfig model.ProjectAppConfig, billDate string) {
 
 	//请求
-	appID := driver.AllConfig.Fapp.Alipay.Appid
-	aliPublicKey := driver.AllConfig.AliPublicKey
-	privateKey := driver.AllConfig.PrivateKey
+	appID := payConfig.AppId
+	aliPublicKey := payConfig.AlipayPublicKey
+	privateKey := payConfig.PrivateKey
 
 	client := alipay.New(appID, aliPublicKey, privateKey, true)
 	pay := alipay.BillDownloadURLQuery{}
@@ -56,7 +56,7 @@ func BillQueryDownload(billDate string) {
 		if path.Ext(file) == ".csv" {
 			//todo 读取csv文件并插入数据库中
 			sliceBills := readBillCsv(file)
-			saveBillData(sliceBills)
+			saveBillData(payConfig.ProjectId, sliceBills)
 
 		}
 	}
@@ -94,7 +94,7 @@ func ConvertToString(src string, srcCode string, tagCode string) string {
 	return result
 }
 
-func saveBillData(content [][]string) {
+func saveBillData(projectId uint, content [][]string) {
 	//csv长度判断
 	length := len(content) - 1
 	if length < 0 {
@@ -121,6 +121,7 @@ func saveBillData(content [][]string) {
 		amount, _ := strconv.ParseFloat(sliceItem[11], 64)
 
 		mapBills[sliceItem[0]] = map[string]interface{}{
+			"ProjectId":  projectId,
 			"Number":     sliceItem[1],
 			"TradeNo":    sliceItem[0],
 			"TradeAt":    sliceItem[5],
@@ -132,7 +133,6 @@ func saveBillData(content [][]string) {
 		}
 		sliceTradeNo = append(sliceTradeNo, sliceItem[0])
 	}
-
 
 	if len(sliceTradeNo) == 0 {
 		return

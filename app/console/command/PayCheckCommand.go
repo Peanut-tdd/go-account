@@ -17,34 +17,51 @@ import (
 func PayCompare() {
 
 	var message string
-	//快手账单message
-	ksBillDiffNumbers, ksOrderDiffNumbers := KsPayCompare()
-	ksCount := len(ksBillDiffNumbers) + len(ksOrderDiffNumbers)
-	if ksCount > 0 {
-		message += "\n\n--------------------\n\n快手-账单异常，异常数：" + strconv.Itoa(ksCount)
-	}
+	Projects := GetPayConfig()
+	for _, project := range Projects {
+		if len(project.ProjectAppConfig) > 0 {
+			for _, payConfig := range project.ProjectAppConfig {
+				switch payConfig.PlatformId {
+				case 2:
+					//快手账单message
+					ksBillDiffNumbers, ksOrderDiffNumbers := KsPayCompare(payConfig, project.ID)
+					ksCount := len(ksBillDiffNumbers) + len(ksOrderDiffNumbers)
+					if ksCount > 0 {
+						message += "\n\n--------------------\n\n快手-账单异常，异常数：" + strconv.Itoa(ksCount)
+					}
+					break
+				case 3:
+					//todo 微信账单message
+					wxBillDiffNumber, wxOrderDiffNumber := wxPayBillCompare(payConfig, "", project.ID, 3)
+					wxDiffCount := len(wxBillDiffNumber) + len(wxOrderDiffNumber)
+					if wxDiffCount > 0 {
+						message += "\n\n--------------------\n\n微信账单异常，异常数：" + strconv.Itoa(wxDiffCount)
+					}
+					break
 
-	//todo 微信账单message
-	wxBillDiffNumber, wxOrderDiffNumber := wxPayBillCompare("", 3)
-	wxDiffCount := len(wxBillDiffNumber) + len(wxOrderDiffNumber)
-	if wxDiffCount > 0 {
-		message += "\n\n--------------------\n\n微信账单异常，异常数：" + strconv.Itoa(wxDiffCount)
-	}
+				case 4:
+					//todo 支付宝账单
+					fappAlipayBillDiffNumber, fappAlipayOrderDiffNumber := fappAliPayBillCompare(payConfig, "", project.ID, 4)
+					fappAlipayDiffCount := len(fappAlipayBillDiffNumber) + len(fappAlipayOrderDiffNumber)
+					if fappAlipayDiffCount > 0 {
+						message += "\n\n--------------------\n\n快应用支付宝账单异常，异常数：" + strconv.Itoa(fappAlipayDiffCount)
+					}
+					break
 
-	//todo 支付宝账单
-	fappAlipayBillDiffNumber, fappAlipayOrderDiffNumber := fappAliPayBillCompare("", 4)
-	fappAlipayDiffCount := len(fappAlipayBillDiffNumber) + len(fappAlipayOrderDiffNumber)
-	if fappAlipayDiffCount > 0 {
-		message += "\n\n--------------------\n\n快应用支付宝账单异常，异常数：" + strconv.Itoa(fappAlipayDiffCount)
-	}
-	title := "充值对账异常账单提醒"
-	if message != "" {
-		sendMessage(title+message, title)
+				}
+
+			}
+		}
+		title := "【" + project.Name + "】:充值对账异常账单提醒"
+		if message != "" {
+			sendMessage(title+message, title)
+		}
+
 	}
 }
 
 //KsPayCompare 快手比较
-func KsPayCompare() ([]string, []string) {
+func KsPayCompare(payConfig model.ProjectAppConfig, projectId uint) ([]string, []string) {
 
 	//获得前一天时间
 	//currentTime := time.Now()
@@ -53,12 +70,12 @@ func KsPayCompare() ([]string, []string) {
 	yesTime := currentTime.AddDate(0, 0, -1)
 	currentTimeFormat := currentTime.Format("20060102000000")
 	yesTimeFormat := yesTime.Format("20060102000000")
-	syncKsBill(yesTimeFormat, currentTimeFormat)
+	syncKsBill(payConfig, projectId, yesTimeFormat, currentTimeFormat)
 	//处理时间
 	startTime := yesTime.Format("2006-01-02 00:00:00")
 	endTime := currentTime.Format("2006-01-02 00:00:00")
-	billNumbers := getBillNumbers(2, 0, startTime, endTime)
-	orderNumbers := getOrderNumbers(2, 0, startTime, endTime)
+	billNumbers := getBillNumbers(projectId, 2, 0, startTime, endTime)
+	orderNumbers := getOrderNumbers(projectId, 2, 0, startTime, endTime)
 	//订单号对比，如果存在差异，发送钉钉消息
 	billDiffNumbers, orderDiffNumbers := utils.Arrcmp(billNumbers, orderNumbers)
 
@@ -67,20 +84,21 @@ func KsPayCompare() ([]string, []string) {
 }
 
 //syncKsBill 同步快手账单
-func syncKsBill(startDate string, endData string) {
+func syncKsBill(payConfig model.ProjectAppConfig, projectId uint, startDate string, endData string) {
 	var request = make(map[string]string)
-	request["app_id"] = driver.GVA_VP.GetString("ks.app_id")
+	request["app_id"] = payConfig.AppId
 	request["start_date"] = startDate
 	request["end_date"] = endData
 	request["bill_type"] = "PAY"
-	kuaishou.GetBills(request)
+	kuaishou.GetBills(payConfig, projectId, request)
 }
 
 //1-同步前一天或指定日期订单
-func getBillNumbers(platFormId int, payChannel int, startDate string, endData string) []string {
+func getBillNumbers(projectId uint, platFormId int, payChannel int, startDate string, endData string) []string {
 	var numbers []string
 
 	sqlModel := driver.GVA_DB.Model(&model.OrderBill{}).
+		Where("project_id", projectId).
 		Where("platform_id = ?", platFormId).
 		Where("trade_at between ? and ?", startDate, endData)
 	if payChannel > 0 {
@@ -92,9 +110,10 @@ func getBillNumbers(platFormId int, payChannel int, startDate string, endData st
 }
 
 //getOrderNumbers 2-查询同步日期订单sql
-func getOrderNumbers(platFormId int, payChannel int, startDate string, endData string) []string {
+func getOrderNumbers(projectId uint, platFormId int, payChannel int, startDate string, endData string) []string {
 	var numbers []string
 	sqlModel := driver.GVA_DB.Model(&model.Orders{}).
+		Where("project_id", projectId).
 		Where("platform_id = ?", platFormId).
 		Where("pay_success_time between ? and ?", startDate, endData).
 		Where("status = 1").
@@ -112,26 +131,26 @@ func sendMessage(message string, title string) {
 	dingding.SendGroup(message, "chat2ec214da47216a95e7ee73ee3760d191", title)
 }
 
-func wxPayBillCompare(compareBillDate string, PlatFormId int) (wxBillDiffNumber, wxOrderDiffNumber []string) {
+func wxPayBillCompare(payConfig model.ProjectAppConfig, compareBillDate string, projectId uint, PlatFormId int) (wxBillDiffNumber, wxOrderDiffNumber []string) {
 
 	//拉取昨日账单
 	yesBillDate := GetBillDate(compareBillDate, PlatFormId) //昨日账单日期
 
 	fmt.Println(yesBillDate)
 	requestParams := make(map[string]string)
-	requestParams["appid"] = driver.AllConfig.Wx.AppId
-	requestParams["mch_id"] = driver.AllConfig.Wx.MchId
+	requestParams["appid"] = payConfig.AppId
+	requestParams["mch_id"] = payConfig.MchId
 	requestParams["nonce_str"] = string(rand.Intn(99999))
 	requestParams["sign_type"] = "MD5"
 	requestParams["bill_date"] = yesBillDate
 	requestParams["bill_type"] = "SUCCESS"
-	wechat.GetBills(requestParams)
+	wechat.GetBills(projectId, requestParams)
 
 	//对比账单
 	start_date, end_date := getBillDateBetween(compareBillDate, -1)
 
-	billNumbers := getBillNumbers(3, 1, start_date, end_date)
-	orderNumbers := getOrderNumbers(3, 1, start_date, end_date)
+	billNumbers := getBillNumbers(projectId, 1, 1, start_date, end_date)
+	orderNumbers := getOrderNumbers(projectId, 3, 1, start_date, end_date)
 	//订单号对比，如果存在差异，发送钉钉消息
 	wxBillDiffNumber, wxOrderDiffNumber = utils.Arrcmp(billNumbers, orderNumbers)
 
@@ -139,16 +158,16 @@ func wxPayBillCompare(compareBillDate string, PlatFormId int) (wxBillDiffNumber,
 
 }
 
-func fappAliPayBillCompare(compareBillDate string, PlatFormId int) (fappAlipayBillDiffNumber, fappAlipayOrderDiffNumber []string) {
+func fappAliPayBillCompare(payConfig model.ProjectAppConfig, compareBillDate string, projectId uint, PlatFormId int) (fappAlipayBillDiffNumber, fappAlipayOrderDiffNumber []string) {
 	//拉取昨日账单
 	yesBillDate := GetBillDate(compareBillDate, PlatFormId) //昨日账单日期
-	alipay.BillQueryDownload(yesBillDate)
+	alipay.BillQueryDownload(payConfig,yesBillDate)
 
 	//对比账单
 	start_date, end_date := getBillDateBetween(compareBillDate, -1)
 
-	billNumbers := getBillNumbers(4, 2, start_date, end_date)
-	orderNumbers := getOrderNumbers(4, 2, start_date, end_date)
+	billNumbers := getBillNumbers(projectId, 4, 2, start_date, end_date)
+	orderNumbers := getOrderNumbers(projectId, 4, 2, start_date, end_date)
 	//订单号对比，如果存在差异，发送钉钉消息
 	fappAlipayBillDiffNumber, fappAlipayOrderDiffNumber = utils.Arrcmp(billNumbers, orderNumbers)
 	return

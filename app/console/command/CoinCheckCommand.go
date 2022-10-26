@@ -2,6 +2,7 @@ package command
 
 import (
 	"account_check/app/model"
+	"account_check/app/utils"
 	"account_check/bootstrap/driver"
 	"fmt"
 	"log"
@@ -9,29 +10,23 @@ import (
 	"strconv"
 )
 
-
-
-
-
 func CoinCheckMessage() {
 	var message string
-	count := PageCheck()
+	projects := GetPayConfig()
+	for _, project := range projects {
 
-	if count != 0 {
-		message += "\n\n--------------------\n\n异常账户数："+ strconv.Itoa(count)
+		count := PageCheck(project.ID)
+
+		if count != 0 {
+			message += "\n\n--------------------\n\n异常账户数：" + strconv.Itoa(count)
+		}
+		title := "【" + utils.Strval(project.Name) + "】:账户虚拟币对账异常"
+
+		if message != "" {
+			sendMessage(title+message, title)
+		}
 	}
-	title := "账户虚拟币对账异常"
-
-	if message != "" {
-		sendMessage(title+message, title)
-	}
-
 }
-
-
-
-
-
 
 func CoinCheck() {
 	coin := getCoinCount()
@@ -42,8 +37,6 @@ func CoinCheck() {
 		//发送钉钉消息
 	}
 }
-
-
 
 func getCoinCount() int {
 	var coin int
@@ -133,16 +126,15 @@ func Check() (isOk bool) {
 
 }
 
-
 /**
 分页查询
 */
-func PageCheck() int {
+func PageCheck(ProjectId interface{}) int {
 
 	var total int64
 	const PAGESIZE = 10
 
-	driver.GVA_DB.Model(&model.CoinFlow{}).Where("type", 2).Distinct("user_id").Count(&total)
+	driver.GVA_DB.Model(&model.CoinFlow{}).Where("type=? and project_id=?", 2, ProjectId).Distinct("user_id").Count(&total)
 	if total == 0 {
 		return 0
 	}
@@ -161,8 +153,8 @@ func PageCheck() int {
 	for i := 1; i <= maxPage; i++ {
 		var offset = (i - 1) * PAGESIZE
 
-		iquery := driver.GVA_DB.Model(&model.CoinFlow{}).Select("user_id,sum(real_coin) as real_coin").Where("type", 2).Group("user_id")
-		oquery := driver.GVA_DB.Model(&model.CoinFlow{}).Select("user_id,sum(real_coin) as real_coin").Where("type", 1).Group("user_id")
+		iquery := driver.GVA_DB.Model(&model.CoinFlow{}).Select("user_id,sum(real_coin) as real_coin").Where("type=? and project_id=?", 2, ProjectId).Group("user_id")
+		oquery := driver.GVA_DB.Model(&model.CoinFlow{}).Select("user_id,sum(real_coin) as real_coin").Where("type=? and project_id=?", 1, ProjectId).Group("user_id")
 		driver.GVA_DB.Model(&model.UserAccount{}).Select("user_account.user_id,user_account.coin,i.real_coin as income_coin,o.real_coin as out_coin").Joins("join (?) i on i.user_id=user_account.user_id", iquery).
 			Joins("left join (?) o on o.user_id=user_account.user_id", oquery).Order("user_account.user_id asc").Limit(PAGESIZE).Offset(offset).Scan(&result)
 

@@ -4,7 +4,6 @@ import (
 	"account_check/app/console/command"
 	"account_check/app/model"
 	"account_check/bootstrap/driver"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,7 +34,13 @@ func DeleteBillDir(c *gin.Context) {
 
 func CheckCoin(c *gin.Context) {
 	//res:=command.Check()//不分页
-	res:= command.PageCheck()
-	fmt.Print(res)
+	command.CoinCheckMessage()
+
+	c.JSONP(200, "success")
+}
+
+func PayConfig(c *gin.Context) {
+	command.GetPayConfig()
+
 	c.JSONP(200, "success")
 }

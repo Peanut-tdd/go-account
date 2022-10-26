@@ -30,11 +30,9 @@ func ApiTest(route *gin.Engine) {
 
 	gen.GET("alipay", bill.FalipayBill)
 
+	gen.GET("delete_dir", controller.DeleteBillDir)
 
-	gen.GET("delete_dir",controller.DeleteBillDir)
+	gen.GET("check_coin", controller.CheckCoin)
 
-	gen.GET("check_coin",controller.CheckCoin)
-
-
-
+	gen.GET("pay_config", controller.PayConfig)
 }

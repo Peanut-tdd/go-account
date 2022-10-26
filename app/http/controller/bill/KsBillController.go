@@ -1,7 +1,6 @@
 package bill
 
 import (
-	"account_check/app/service/kuaishou"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,7 +10,7 @@ func KsBill(c *gin.Context) {
 	request["start_date"] = "20220819000000"
 	request["end_date"] = "20220820000000"
 	request["bill_type"] = "PAY"
-	kuaishou.GetBills(request)
+	//kuaishou.GetBills(request)
 
 	c.JSONP(200, "success")
 }

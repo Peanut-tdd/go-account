@@ -15,13 +15,13 @@ import (
 const KS_TOKEN_KEY = "ks:token"
 
 //GetBills 获得快手账单
-func GetBills(request map[string]string) {
+func GetBills(payConfig model.ProjectAppConfig,projectId uint, request map[string]string) {
 	sign := utils.MD5Params(request, driver.GVA_VP.GetString("ks.app_secret"), nil, "KS")
 	request["sign"] = sign
 	//获得url参数字段
 	var queryForm = make(map[string]string)
 	queryForm["app_id"] = request["app_id"]
-	queryForm["access_token"] = getToken(request)
+	queryForm["access_token"] = getToken(payConfig,request)
 	//获得下载账单
 	filepath := utils.CsvFilePath(2, 1)
 	//生成下载文件
@@ -39,17 +39,17 @@ func GetBills(request map[string]string) {
 		//获得当前的csv文件
 		if path.Ext(file) == ".csv" {
 			//todo 读取csv文件并插入数据库中
-			readBillCsv(file)
+			readBillCsv(projectId, file)
 		}
 	}
 }
 
 //getToken 获得快手token
-func getToken(request map[string]string) string {
+func getToken(payConfig model.ProjectAppConfig, request map[string]string) string {
 	token := utils.RedisGet(KS_TOKEN_KEY)
 	if token == nil || token == "" {
-		request["app_id"] = driver.GVA_VP.GetString("ks.app_id")
-		request["app_secret"] = driver.GVA_VP.GetString("ks.app_secret")
+		request["app_id"] = payConfig.AppId
+		request["app_secret"] = payConfig.AppSecret
 		request["grant_type"] = "client_credentials"
 		res, _ := utils.HttpSendFormResJson("https://open.kuaishou.com/oauth2/access_token", "post", request, nil, vo.GetAccessToken{})
 		result := res.Result().(*vo.GetAccessToken)
@@ -61,7 +61,7 @@ func getToken(request map[string]string) string {
 	return utils.GetInterfaceToString(token)
 }
 
-func readBillCsv(filepath string) {
+func readBillCsv(projectId uint, filepath string) {
 	file, err := os.Open(filepath) //读取文件
 	if err != nil {
 		fmt.Println(err)
@@ -82,6 +82,7 @@ func readBillCsv(filepath string) {
 		//获得所有
 		numbers = append(numbers, item[4])
 		bills = append(bills, model.OrderBill{
+			ProjectId:  projectId,
 			Number:     item[4],
 			TradeNo:    item[5],
 			TradeAt:    utils.StringToTime(item[1]),

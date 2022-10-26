@@ -16,7 +16,7 @@ import (
 )
 
 //GetBills 获得账单信息
-func GetBills(request map[string]string) {
+func GetBills(projectId uint, request map[string]string) {
 	//ReadCsv("./test.csv")
 	//return
 	sign := utils.MD5Params(request, driver.AllConfig.Wx.Key, nil, "WECHAT")
@@ -34,7 +34,7 @@ func GetBills(request map[string]string) {
 	}
 	//log.Println(res.String())
 
-	ReadCsv(filepath)
+	ReadCsv(projectId, filepath)
 	//resArr := strings.Split(res.String(), "\r\n")
 	//for _, v := range resArr {
 	//	log.Print("=====" + v + "======")
@@ -81,7 +81,7 @@ func readCsvFromByte(str string) {
 	}
 }
 
-func ReadCsv(filepath string) {
+func ReadCsv(projectId uint, filepath string) {
 	csvFile, err := os.Open(filepath)
 	if err != nil {
 		log.Println("csv文件打开失败！")
@@ -127,6 +127,7 @@ func ReadCsv(filepath string) {
 
 		key := sliceItem[5]
 		mapBills[key] = map[string]interface{}{
+			"ProjectId":  projectId,
 			"Number":     sliceItem[6],
 			"TradeNo":    sliceItem[5],
 			"TradeAt":    utils.StringToTime(sliceItem[0]),
