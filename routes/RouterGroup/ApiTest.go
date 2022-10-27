@@ -1,8 +1,8 @@
 package RouterGroup
 
 import (
-	"account_check/app/Http/Middlewares"
-	"account_check/app/Http/controller"
+	"account_check/app/http/Middlewares"
+	"account_check/app/http/controller"
 	"account_check/app/http/controller/bill"
 	"github.com/gin-gonic/gin"
 	"net/http"
