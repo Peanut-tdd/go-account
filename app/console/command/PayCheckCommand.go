@@ -64,8 +64,8 @@ func PayCompare() {
 func KsPayCompare(payConfig model.ProjectAppConfig, projectId uint) ([]string, []string) {
 
 	//获得前一天时间
-	//currentTime := time.Now()
-	currentTime, _ := time.Parse("2006-01-02 15:04:05", "2022-08-20 00:00:00")
+	currentTime := time.Now()
+	//currentTime, _ := time.Parse("2006-01-02 15:04:05", "2022-08-20 00:00:00")
 
 	yesTime := currentTime.AddDate(0, 0, -1)
 	currentTimeFormat := currentTime.Format("20060102000000")
