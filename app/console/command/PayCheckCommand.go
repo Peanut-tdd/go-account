@@ -144,12 +144,12 @@ func wxPayBillCompare(payConfig model.ProjectAppConfig, compareBillDate string, 
 	requestParams["sign_type"] = "MD5"
 	requestParams["bill_date"] = yesBillDate
 	requestParams["bill_type"] = "SUCCESS"
-	wechat.GetBills(projectId, requestParams)
+	wechat.GetBills(payConfig, requestParams)
 
 	//对比账单
 	start_date, end_date := getBillDateBetween(compareBillDate, -1)
 
-	billNumbers := getBillNumbers(projectId, 1, 1, start_date, end_date)
+	billNumbers := getBillNumbers(projectId, 3, 1, start_date, end_date)
 	orderNumbers := getOrderNumbers(projectId, 3, 1, start_date, end_date)
 	//订单号对比，如果存在差异，发送钉钉消息
 	wxBillDiffNumber, wxOrderDiffNumber = utils.Arrcmp(billNumbers, orderNumbers)

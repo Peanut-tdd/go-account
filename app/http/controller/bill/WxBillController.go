@@ -20,6 +20,7 @@ func WxBill(c *gin.Context) {
 	}
 
 	billDate = command.GetBillDate(billDate, 3)
+
 	//支付参数
 	payConfig := command.GetConfigByQueryParmas(projectId, platformId, channel)
 
@@ -34,6 +35,6 @@ func WxBill(c *gin.Context) {
 
 
 	fmt.Println(request)
-	wechat.GetBills(payConfig.ProjectId, request)
+	wechat.GetBills(payConfig, request)
 	c.JSONP(200, "success")
 }

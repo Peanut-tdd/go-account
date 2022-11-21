@@ -16,10 +16,10 @@ import (
 )
 
 //GetBills 获得账单信息
-func GetBills(projectId uint, request map[string]string) {
+func GetBills(payConfig model.ProjectAppConfig, request map[string]string) {
 	//ReadCsv("./test.csv")
 	//return
-	sign := utils.MD5Params(request, driver.AllConfig.Wx.Key, nil, "WECHAT")
+	sign := utils.MD5Params(request, payConfig.Key, nil, "WECHAT")
 	request["sign"] = sign
 
 	//fmt.Println(request)
@@ -34,7 +34,7 @@ func GetBills(projectId uint, request map[string]string) {
 	}
 	//log.Println(res.String())
 
-	ReadCsv(projectId, filepath)
+	ReadCsv(payConfig.ProjectId, filepath)
 	//resArr := strings.Split(res.String(), "\r\n")
 	//for _, v := range resArr {
 	//	log.Print("=====" + v + "======")
