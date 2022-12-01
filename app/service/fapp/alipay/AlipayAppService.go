@@ -21,7 +21,7 @@ var (
 	client *alipay.AliPay
 )
 
-func BillQueryDownload(payConfig model.ProjectAppConfig, billDate string) {
+func BillQueryDownload(payConfig model.ProjectAppConfig, billDate string) bool {
 
 	//请求
 	appID := payConfig.AppId
@@ -40,12 +40,12 @@ func BillQueryDownload(payConfig model.ProjectAppConfig, billDate string) {
 	//下载解压
 	url := res.AliPayDataServiceBillDownloadURLQueryResponse.BillDownloadUrl
 	if url == "" {
-		return
+		return false
 	}
 
-	filePath := utils.CsvFilePath(4, 2)
+	filePath := utils.CsvFilePath(payConfig.ProjectId, 4, 2)
 	utils.UrlDownLoad(url, filePath)
-	utils.UnzipFile(filePath, utils.CsvFileDir(4, 2), "\u6c47\u603b")
+	utils.UnzipFile(filePath, utils.CsvFileDir(payConfig.ProjectId, 4, 2), "\u6c47\u603b")
 
 	//读文件
 
@@ -60,6 +60,7 @@ func BillQueryDownload(payConfig model.ProjectAppConfig, billDate string) {
 
 		}
 	}
+	return true
 
 }
 

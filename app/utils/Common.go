@@ -33,9 +33,10 @@ func CurrentYmd() string {
 }
 
 //CsvFileDir 生成下载文件地址
-func CsvFileDir(sourceType int, payChannel int) string {
+func CsvFileDir(projectId uint, sourceType int, payChannel int) string {
 	var fileDir string
-	fileDir = STORAGE + "/download"
+	fileDir = STORAGE + "/download/project-" + strconv.FormatUint(uint64(projectId), 10)
+
 	switch sourceType {
 	//微信
 	case 1:
@@ -74,8 +75,8 @@ func CsvFileName(sourceType int) string {
 	return filename
 }
 
-func CsvFilePath(sourceType int, payChannel int) string {
-	return CsvFileDir(sourceType, payChannel) + CsvFileName(sourceType)
+func CsvFilePath(projectId uint, sourceType int, payChannel int) string {
+	return CsvFileDir(projectId, sourceType, payChannel) + CsvFileName(sourceType)
 }
 
 //StringToTime 字符串转时间
@@ -177,7 +178,6 @@ func JsonEncode(data interface{}) {
 	return
 
 }
-
 
 func Strval(value interface{}) string {
 	var key string

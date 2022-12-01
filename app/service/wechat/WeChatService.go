@@ -26,7 +26,8 @@ func GetBills(payConfig model.ProjectAppConfig, request map[string]string) {
 	//map转xml
 	params := toXml(request)
 	//http请求
-	filepath := utils.CsvFilePath(1, 1)
+	filepath := utils.CsvFilePath(payConfig.ProjectId, 1, 1)
+	//fmt.Println("filepath:", filepath)
 	_, err := utils.HttpSendBodyResDownLoad("https://api.mch.weixin.qq.com/pay/downloadbill", "post", params, nil, nil, filepath, "")
 
 	if err != nil {

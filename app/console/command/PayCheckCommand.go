@@ -40,13 +40,16 @@ func PayCompare() {
 					break
 
 				case 4:
-					//todo 支付宝账单
-					fappAlipayBillDiffNumber, fappAlipayOrderDiffNumber := fappAliPayBillCompare(payConfig, "", project.ID, 4)
-					fappAlipayDiffCount := len(fappAlipayBillDiffNumber) + len(fappAlipayOrderDiffNumber)
-					if fappAlipayDiffCount > 0 {
-						message += "\n\n--------------------\n\n快应用支付宝账单异常，异常数：" + strconv.Itoa(fappAlipayDiffCount)
+					switch payConfig.PayChannel {
+					case 2:
+						//todo 支付宝账单
+						fappAlipayBillDiffNumber, fappAlipayOrderDiffNumber := fappAliPayBillCompare(payConfig, "", project.ID, 4)
+						fappAlipayDiffCount := len(fappAlipayBillDiffNumber) + len(fappAlipayOrderDiffNumber)
+						if fappAlipayDiffCount > 0 {
+							message += "\n\n--------------------\n\n快应用支付宝账单异常，异常数：" + strconv.Itoa(fappAlipayDiffCount)
+						}
+						break
 					}
-					break
 
 				}
 
@@ -161,7 +164,12 @@ func wxPayBillCompare(payConfig model.ProjectAppConfig, compareBillDate string, 
 func fappAliPayBillCompare(payConfig model.ProjectAppConfig, compareBillDate string, projectId uint, PlatFormId int) (fappAlipayBillDiffNumber, fappAlipayOrderDiffNumber []string) {
 	//拉取昨日账单
 	yesBillDate := GetBillDate(compareBillDate, PlatFormId) //昨日账单日期
-	alipay.BillQueryDownload(payConfig,yesBillDate)
+	res := alipay.BillQueryDownload(payConfig, yesBillDate)
+	if res == false {
+		fmt.Println("alipay download:", res)
+		fappAlipayBillDiffNumber, fappAlipayOrderDiffNumber = make([]string, 0), make([]string, 0)
+		return
+	}
 
 	//对比账单
 	start_date, end_date := getBillDateBetween(compareBillDate, -1)

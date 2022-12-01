@@ -3,7 +3,6 @@ package command
 import (
 	"account_check/app/model"
 	"account_check/bootstrap/driver"
-	"fmt"
 )
 
 //获取支付配置
@@ -23,14 +22,17 @@ func GetConfigByQueryParmas(projectId string, platformId string, payChannel stri
 
 	var payConfig model.ProjectAppConfig
 
-	//var queryParams = make(map[string]interface{},0)
-	queryParams := map[string]interface{}{
+	var queryParams = make(map[string]interface{}, 0)
+	queryParams = map[string]interface{}{
 		"project_id":  projectId,
 		"platform_id": platformId,
 		"pay_channel": payChannel,
 	}
 
-	fmt.Println(queryParams)
+	//fmt.Println(queryParams)
+	//
+	//fmt.Println(driver.GVA_DB)
+
 	driver.GVA_DB.Model(&model.ProjectAppConfig{}).Where(queryParams).Find(&payConfig)
 
 	return payConfig
