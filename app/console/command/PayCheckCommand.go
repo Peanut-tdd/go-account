@@ -16,9 +16,9 @@ import (
 
 func PayCompare() {
 
-	var message string
 	Projects := GetPayConfig()
 	for _, project := range Projects {
+		var message string
 		if len(project.ProjectAppConfig) > 0 {
 			for _, payConfig := range project.ProjectAppConfig {
 				switch payConfig.PlatformId {
