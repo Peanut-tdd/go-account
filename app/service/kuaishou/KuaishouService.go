@@ -76,7 +76,7 @@ func readBillCsv(projectId uint, filepath string) {
 	var numbersModel []string
 
 	for index, item := range csvdata { //按行打印数据
-		if index < 1 || utils.GetInterfaceToInt(item[6]) <= 1 {
+		if index < 1 {
 			continue
 		}
 		//获得所有

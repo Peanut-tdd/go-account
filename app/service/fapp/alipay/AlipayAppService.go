@@ -120,9 +120,9 @@ func saveBillData(projectId uint, content [][]string) {
 		//return
 
 		amount, _ := strconv.ParseFloat(sliceItem[11], 64)
-		if int(amount*100) <= 1 {
-			continue
-		}
+		//if int(amount*100) <= 1 {
+		//	continue
+		//}
 
 		mapBills[sliceItem[0]] = map[string]interface{}{
 			"ProjectId":  projectId,

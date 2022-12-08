@@ -22,7 +22,6 @@ func GetBills(payConfig model.ProjectAppConfig, request map[string]string) {
 	sign := utils.MD5Params(request, payConfig.Key, nil, "WECHAT")
 	request["sign"] = sign
 
-	//fmt.Println(request)
 	//map转xml
 	params := toXml(request)
 	//http请求
@@ -33,7 +32,6 @@ func GetBills(payConfig model.ProjectAppConfig, request map[string]string) {
 	if err != nil {
 		log.Fatal("获取csv文件信息失败，err is %+v", err)
 	}
-	//log.Println(res.String())
 
 	ReadCsv(payConfig.ProjectId, filepath)
 	//resArr := strings.Split(res.String(), "\r\n")
@@ -109,8 +107,12 @@ func ReadCsv(projectId uint, filepath string) {
 
 	mapBills := make(map[string]map[string]interface{})
 	sliceTradeNo := make([]string, 0)
+	//测试环境用户订单需过滤
+	testUserOpendIds := []string{"osJgh5do_edzSgrHNZdZ-rLUj30A", "osJgh5f1BOu0jcMmH_ZrhVoZabPI", "osJgh5ZKKB9KYOdF7cer9gMl_BQk", "osJgh5WcYdAhG4x8X4ykV3-UMCrQ", "osJgh5X5-F9UeVSpzAIaDF0Uz1uE", "osJgh5RaKq-hgZDAUUuRCQ8W5uhY", "osJgh5SPpr01LhCLFW4T6NUf_WM4", "osJgh5aSJNC4f_9MBTHE8ef-QpL0", "osJgh5SCHOQ7OPmRRH6cFREOjGis", "oqk-H5czjDZvyuIBViQ8IztgWD-M", "oqk-H5fTWR4SCTuPFzgM84ygKUGQ"}
 
 	for index, item := range content {
+		//是否入库
+		goingOn := true
 
 		re := regexp.MustCompile("<xml>")
 		match := re.MatchString(item[0])
@@ -126,7 +128,14 @@ func ReadCsv(projectId uint, filepath string) {
 		amount, _ := strconv.ParseFloat(sliceItem[12], 64)
 		amount = amount * 100
 
-		if amount <= 1 {
+		//过滤测试账号
+		for _, openid := range testUserOpendIds {
+			if openid == sliceItem[7] {
+				goingOn = false
+				break
+			}
+		}
+		if goingOn == false {
 			continue
 		}
 
@@ -145,7 +154,7 @@ func ReadCsv(projectId uint, filepath string) {
 		sliceTradeNo = append(sliceTradeNo, sliceItem[5])
 
 	}
-	
+
 	if len(sliceTradeNo) == 0 {
 		return
 	}
