@@ -16,7 +16,7 @@ const KS_TOKEN_KEY = "ks:token"
 
 //GetBills 获得快手账单
 func GetBills(payConfig model.ProjectAppConfig, projectId uint, request map[string]string) {
-	sign := utils.MD5Params(request, driver.GVA_VP.GetString("ks.app_secret"), nil, "KS")
+	sign := utils.MD5Params(request, payConfig.AppSecret, nil, "KS")
 	request["sign"] = sign
 	//获得url参数字段
 	var queryForm = make(map[string]string)
