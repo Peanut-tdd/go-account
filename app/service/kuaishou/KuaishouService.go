@@ -15,26 +15,26 @@ import (
 const KS_TOKEN_KEY = "ks:token"
 
 //GetBills 获得快手账单
-func GetBills(payConfig model.ProjectAppConfig,projectId uint, request map[string]string) {
+func GetBills(payConfig model.ProjectAppConfig, projectId uint, request map[string]string) {
 	sign := utils.MD5Params(request, driver.GVA_VP.GetString("ks.app_secret"), nil, "KS")
 	request["sign"] = sign
 	//获得url参数字段
 	var queryForm = make(map[string]string)
 	queryForm["app_id"] = request["app_id"]
-	queryForm["access_token"] = getToken(payConfig,request)
+	queryForm["access_token"] = getToken(payConfig, request)
 	//获得下载账单
-	filepath := utils.CsvFilePath(payConfig.ProjectId,2, 1)
+	filepath := utils.CsvFilePath(payConfig.ProjectId, 2, 1)
 	//生成下载文件
 	utils.HttpSendBodyResDownLoad("https://open.kuaishou.com/openapi/mp/developer/epay/query_bill", "post", request, queryForm, nil, filepath, "")
 	//解压账单
 
-	err := utils.Unzip(filepath, utils.CsvFileDir(payConfig.ProjectId,2, 1))
+	err := utils.Unzip(filepath, utils.CsvFileDir(payConfig.ProjectId, 2, 1))
 	if err == nil {
 		//todo 打印日志
 		return
 	}
 	//获取文件夹下所有的文件
-	files, _ := utils.TPFuncReadDirFiles(utils.CsvFileDir(payConfig.ProjectId,2, 1))
+	files, _ := utils.TPFuncReadDirFiles(utils.CsvFileDir(payConfig.ProjectId, 2, 1))
 	for _, file := range files {
 		//获得当前的csv文件
 		if path.Ext(file) == ".csv" {
@@ -76,7 +76,7 @@ func readBillCsv(projectId uint, filepath string) {
 	var numbersModel []string
 
 	for index, item := range csvdata { //按行打印数据
-		if index < 1 {
+		if index < 1 || utils.GetInterfaceToInt(item[6]) <= 1 {
 			continue
 		}
 		//获得所有

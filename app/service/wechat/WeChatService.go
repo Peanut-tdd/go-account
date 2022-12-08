@@ -126,6 +126,10 @@ func ReadCsv(projectId uint, filepath string) {
 		amount, _ := strconv.ParseFloat(sliceItem[12], 64)
 		amount = amount * 100
 
+		if amount <= 1 {
+			continue
+		}
+
 		key := sliceItem[5]
 		mapBills[key] = map[string]interface{}{
 			"ProjectId":  projectId,
@@ -141,7 +145,7 @@ func ReadCsv(projectId uint, filepath string) {
 		sliceTradeNo = append(sliceTradeNo, sliceItem[5])
 
 	}
-
+	
 	if len(sliceTradeNo) == 0 {
 		return
 	}
