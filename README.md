@@ -1,5 +1,4 @@
 # go-account
-#config
 mysql:
   host: 10.0.50.15
   port: 3306
